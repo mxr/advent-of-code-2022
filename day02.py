@@ -30,7 +30,7 @@ SCORES = {
 }
 
 
-def won(you: str, opponent: str) -> bool:
+def win(you: str, opponent: str) -> bool:
     return WIN[you] == opponent
 
 
@@ -54,7 +54,7 @@ def part1(filename: str) -> int:
     for game in inp:
         opponent, _, you = game.partition(" ")
         score += SCORES[you]
-        score += 6 if won(you, opponent) else 3 if draw(you, opponent) else 0
+        score += 6 if win(you, opponent) else 3 if draw(you, opponent) else 0
 
     return score
 
@@ -67,7 +67,7 @@ def part2(filename: str) -> int:
         opponent, _, outcome = game.partition(" ")
         you = force(opponent, outcome)
         score += SCORES[you]
-        score += 6 if won(you, opponent) else 3 if draw(you, opponent) else 0
+        score += 6 if win(you, opponent) else 3 if draw(you, opponent) else 0
 
     return score
 
