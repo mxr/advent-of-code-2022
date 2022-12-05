@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import re
 from itertools import zip_longest
 
@@ -12,7 +13,8 @@ def parse(filename: str) -> str:
         return f.read()
 
 
-def part1(filename: str) -> int:
+@functools.cache
+def helper(filename: str) -> tuple[list[tuple[str, ...]], list[tuple[int, int, int]]]:
     positions, instructions = parse(filename).split("\n\n")
 
     cols = tuple(
@@ -20,51 +22,44 @@ def part1(filename: str) -> int:
     )
 
     i = 1
-    stacks = []
+    initial_stacks = []
     while i < len(cols):
         col = cols[i]
-        stacks.append(
-            [col[i] for i in range(len(col) - 2, -1, -1) if col[i] not in SKIP]
+        initial_stacks.append(
+            tuple(col[i] for i in range(len(col) - 2, -1, -1) if col[i] not in SKIP)
         )
         i += 4
 
+    nums = []
     for instr in instructions.splitlines():
-        nums = RE.findall(instr)
-        assert nums, instr
-        amt, s1, s2 = int(nums[0]), int(nums[1]) - 1, int(nums[2]) - 1
+        raw_nums = RE.findall(instr)
+        assert raw_nums, instr
 
-        for _ in range(amt):
-            stacks[s2].append(stacks[s1].pop())
+        amt, s1, s2 = int(raw_nums[0]), int(raw_nums[1]) - 1, int(raw_nums[2]) - 1
+        nums.append((amt, s1, s2))
+
+    return initial_stacks, nums
+
+
+def part1(filename: str) -> int:
+    initial_stacks, nums = helper(filename)
+    stacks = [list(s) for s in initial_stacks]
+
+    for amt, s1, s2 in nums:
+        stacks[s1], top = stacks[s1][:-amt], reversed(stacks[s1][-amt:])
+        stacks[s2].extend(top)
 
     print("".join(s[-1] for s in stacks), end=" ")
     return -1
 
 
 def part2(filename: str) -> int:
-    positions, instructions = parse(filename).split("\n\n")
+    initial_stacks, nums = helper(filename)
+    stacks = [list(s) for s in initial_stacks]
 
-    cols = tuple(
-        zip_longest(*tuple(tuple(s) for s in positions.splitlines()), fillvalue=" ")
-    )
-
-    i = 1
-    stacks = []
-    while i < len(cols):
-        col = cols[i]
-        stacks.append(
-            [col[i] for i in range(len(col) - 2, -1, -1) if col[i] not in SKIP]
-        )
-        i += 4
-
-    for instr in instructions.splitlines():
-        nums = RE.findall(instr)
-        assert nums, instr
-        amt, s1, s2 = int(nums[0]), int(nums[1]) - 1, int(nums[2]) - 1
-
-        tmp = []
-        for _ in range(amt):
-            tmp.append(stacks[s1].pop())
-        stacks[s2].extend(reversed(tmp))
+    for amt, s1, s2 in nums:
+        stacks[s1], top = stacks[s1][:-amt], stacks[s1][-amt:]
+        stacks[s2].extend(top)
 
     print("".join(s[-1] for s in stacks), end=" ")
     return -1
