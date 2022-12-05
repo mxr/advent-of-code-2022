@@ -3,11 +3,8 @@ repos:
     rev: v4.4.0
     hooks:
     -   id: check-docstring-first
-    -   id: check-yaml
     -   id: debug-statements
     -   id: end-of-file-fixer
-    -   id: name-tests-test
-    -   id: requirements-txt-fixer
     -   id: trailing-whitespace
 -   repo: https://github.com/hakancelikdev/unimport
     rev: d0af8af1aed8ec49723dcc52ea4896af0beb531f
