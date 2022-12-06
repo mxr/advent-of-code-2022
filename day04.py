@@ -4,20 +4,16 @@ import functools
 from collections.abc import Generator
 
 
-def parse(filename: str) -> str:
-    with open(filename) as f:
-        return f.read()
-
-
 @functools.cache
-def helper(filename: str) -> tuple[tuple[int, int, int, int], ...]:
+def parse(filename: str) -> tuple[tuple[int, int, int, int], ...]:
     def gen() -> Generator[tuple[int, int, int, int], None, None]:
-        for rp in parse(filename).splitlines():
-            rp1, _, rp2 = rp.partition(",")
-            r1, _, r2 = rp1.partition("-")
-            r3, _, r4 = rp2.partition("-")
+        with open(filename) as f:
+            for rp in f.readlines():
+                rp1, _, rp2 = rp.partition(",")
+                r1, _, r2 = rp1.partition("-")
+                r3, _, r4 = rp2.partition("-")
 
-            yield int(r1), int(r2), int(r3), int(r4)
+                yield int(r1), int(r2), int(r3), int(r4)
 
     return tuple(gen())
 
@@ -25,12 +21,12 @@ def helper(filename: str) -> tuple[tuple[int, int, int, int], ...]:
 def part1(filename: str) -> int:
     return sum(
         n1 <= n3 <= n4 <= n2 or n3 <= n1 <= n2 <= n4
-        for n1, n2, n3, n4 in helper(filename)
+        for n1, n2, n3, n4 in parse(filename)
     )
 
 
 def part2(filename: str) -> int:
-    return sum(n1 <= n3 <= n2 or n3 <= n1 <= n4 for n1, n2, n3, n4 in helper(filename))
+    return sum(n1 <= n3 <= n2 or n3 <= n1 <= n4 for n1, n2, n3, n4 in parse(filename))
 
 
 if __name__ == "__main__":
