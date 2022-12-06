@@ -8,14 +8,10 @@ RE = re.compile(r"\d+")
 SKIP = frozenset(("[", "]", " "))
 
 
-def parse(filename: str) -> str:
-    with open(filename) as f:
-        return f.read()
-
-
 @functools.cache
-def helper(filename: str) -> tuple[list[tuple[str, ...]], list[tuple[int, int, int]]]:
-    positions, instructions = parse(filename).split("\n\n")
+def parse(filename: str) -> tuple[list[tuple[str, ...]], list[tuple[int, int, int]]]:
+    with open(filename) as f:
+        positions, instructions = f.read().split("\n\n")
 
     cols = tuple(
         zip_longest(*tuple(tuple(s) for s in positions.splitlines()), fillvalue=" ")
@@ -32,17 +28,17 @@ def helper(filename: str) -> tuple[list[tuple[str, ...]], list[tuple[int, int, i
 
     nums = []
     for instr in instructions.splitlines():
-        raw_nums = RE.findall(instr)
-        assert raw_nums, instr
+        m = RE.findall(instr)
+        assert len(m) == 3, (m, instr)
 
-        amt, s1, s2 = int(raw_nums[0]), int(raw_nums[1]) - 1, int(raw_nums[2]) - 1
+        amt, s1, s2 = int(m[0]), int(m[1]) - 1, int(m[2]) - 1
         nums.append((amt, s1, s2))
 
     return initial_stacks, nums
 
 
 def part1(filename: str) -> int:
-    initial_stacks, nums = helper(filename)
+    initial_stacks, nums = parse(filename)
     stacks = [list(s) for s in initial_stacks]
 
     for amt, s1, s2 in nums:
@@ -54,7 +50,7 @@ def part1(filename: str) -> int:
 
 
 def part2(filename: str) -> int:
-    initial_stacks, nums = helper(filename)
+    initial_stacks, nums = parse(filename)
     stacks = [list(s) for s in initial_stacks]
 
     for amt, s1, s2 in nums:
