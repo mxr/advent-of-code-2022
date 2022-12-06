@@ -12,12 +12,14 @@ def helper(filename: str, n: int) -> int:
     d: deque[str] = deque()
     for i, c in enumerate(parse(filename)):
         d.append(c)
+
         if len(d) < n:
             continue
-
         if len(d) == len(set(d)):
             return i + 1
+
         d.popleft()
+
     return -1
 
 
