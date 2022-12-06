@@ -1,19 +1,21 @@
 from __future__ import annotations
 
 import functools
+import re
 from collections.abc import Generator
+
+RE = re.compile(r"\d+")
 
 
 @functools.cache
 def parse(filename: str) -> tuple[tuple[int, int, int, int], ...]:
     def gen() -> Generator[tuple[int, int, int, int], None, None]:
         with open(filename) as f:
-            for rp in f.readlines():
-                rp1, _, rp2 = rp.partition(",")
-                r1, _, r2 = rp1.partition("-")
-                r3, _, r4 = rp2.partition("-")
+            for line in f.readlines():
+                m = RE.findall(line)
+                assert len(m) == 4, (m, line)
 
-                yield int(r1), int(r2), int(r3), int(r4)
+                yield int(m[0]), int(m[1]), int(m[2]), int(m[3])
 
     return tuple(gen())
 
