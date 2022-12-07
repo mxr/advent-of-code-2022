@@ -100,12 +100,12 @@ def part1(filename: str) -> int:
 
 
 def part2(filename: str) -> int:
-    sn = sorted(dir_sizes(filename))
+    ds = sorted(dir_sizes(filename))
 
-    target = 30000000 - (70000000 - sn[-1])
-    i = bisect.bisect(sn, target)
+    target = 30000000 - (70000000 - ds[-1])
+    i = bisect.bisect(ds, target)
 
-    return sn[i]
+    return ds[i]
 
 
 if __name__ == "__main__":
