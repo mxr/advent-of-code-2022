@@ -25,14 +25,14 @@ def val(c: str) -> int:
 def parse(
     filename: str,
 ) -> tuple[dijkstar.Graph, list[tuple[int, int]], tuple[int, int]]:
-    with open(filename) as f:
-        grid = tuple(tuple(line.strip()) for line in f)
-
     graph = dijkstar.Graph()
 
     start = (-1, -1)
     starts = []
     end = (-1, -1)
+
+    with open(filename) as f:
+        grid = tuple(tuple(line.strip()) for line in f)
 
     width, height = len(grid[0]), len(grid)
     for i, row in enumerate(grid):
@@ -69,6 +69,7 @@ def part2(filename: str) -> int:
     m = float("inf")
     for s in starts:
         with contextlib.suppress(dijkstar.NoPathError):
+            dijkstar.single_source_shortest_paths()
             tc = dijkstar.find_path(graph, s, end).total_cost
             m = min(m, tc)
 
